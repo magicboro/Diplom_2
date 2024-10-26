@@ -17,8 +17,8 @@ public class UserAssertions {
                 .extract()
                 .body().as(Map.class);
 
-        Assert.assertEquals(true, responseBody.get("success"));
         Assert.assertEquals(Set.of("success", "user", "accessToken", "refreshToken"), responseBody.keySet());
+        Assert.assertEquals(true, responseBody.get("success"));
         Map<String, Object> userResponse = (Map<String, Object>) responseBody.get("user");
         Assert.assertNotNull(userResponse);
         Assert.assertEquals(user.getEmail().toLowerCase(), userResponse.get("email"));
@@ -34,6 +34,8 @@ public class UserAssertions {
                 .statusCode(HTTP_FORBIDDEN)
                 .extract()
                 .body().as(Map.class);
+
+        Assert.assertEquals(Set.of("success", "message"), responseBody.keySet());
         Assert.assertEquals(false, responseBody.get("success"));
         Assert.assertEquals("User already exists", responseBody.get("message"));
     }
@@ -46,8 +48,8 @@ public class UserAssertions {
                 .extract()
                 .body().as(Map.class);
 
-        Assert.assertEquals(false, responseBody.get("success"));
         Assert.assertEquals(Set.of("success", "message"), responseBody.keySet());
+        Assert.assertEquals(false, responseBody.get("success"));
         Assert.assertEquals("Email, password and name are required fields", responseBody.get("message"));
     }
 
@@ -60,8 +62,8 @@ public class UserAssertions {
                 .extract()
                 .body().as(Map.class);
 
-        Assert.assertEquals(true, responseBody.get("success"));
         Assert.assertEquals(Set.of("success", "user", "accessToken", "refreshToken"), responseBody.keySet());
+        Assert.assertEquals(true, responseBody.get("success"));
         Map<String, Object> userResponse = (Map<String, Object>) responseBody.get("user");
         Assert.assertNotNull(userResponse);
         Assert.assertEquals(user.getEmail().toLowerCase(), userResponse.get("email"));
@@ -77,12 +79,53 @@ public class UserAssertions {
                 .statusCode(HTTP_UNAUTHORIZED)
                 .extract()
                 .body().as(Map.class);
-
-        Assert.assertEquals(false, responseBody.get("success"));
         Assert.assertEquals(Set.of("success", "message"), responseBody.keySet());
+        Assert.assertEquals(false, responseBody.get("success"));
         Assert.assertEquals("email or password are incorrect", responseBody.get("message"));
     }
 
+    @Step("Assert that change user data response have correct status code and body")
+    public void changeUserDataSuccessfully(ValidatableResponse changeResponse, User user) {
+        var responseBody = changeResponse
+                .assertThat()
+                .statusCode(HTTP_OK)
+                .extract()
+                .body().as(Map.class);
 
+        Assert.assertEquals(Set.of("success", "user"), responseBody.keySet());
+        Assert.assertEquals(true, responseBody.get("success"));
+        Map<String, Object> userResponse = (Map<String, Object>) responseBody.get("user");
+        Assert.assertNotNull(userResponse);
+        Assert.assertEquals(user.getEmail().toLowerCase(), userResponse.get("email"));
+        Assert.assertEquals(user.getName(), userResponse.get("name"));
+    }
+
+    @Step("Assert that change user data without authorisation response have correct status code and body")
+    public void changeUserDataWithoutAuthError(ValidatableResponse changeResponse) {
+        var responseBody = changeResponse
+                .assertThat()
+                .statusCode(HTTP_UNAUTHORIZED)
+                .extract()
+                .body().as(Map.class);
+
+        Assert.assertEquals(Set.of("success", "message"), responseBody.keySet());
+        Assert.assertEquals(false, responseBody.get("success"));
+        Assert.assertEquals("You should be authorised", responseBody.get("message"));
+
+    }
+
+    @Step("Assert that change user data email already exists error response have correct status code and body")
+    public void changeUserDataEmailAlreadyExistsError(ValidatableResponse changeResponse) {
+        var responseBody = changeResponse
+                .assertThat()
+                .statusCode(HTTP_FORBIDDEN)
+                .extract()
+                .body().as(Map.class);
+
+        Assert.assertEquals(Set.of("success", "message"), responseBody.keySet());
+        Assert.assertEquals(false, responseBody.get("success"));
+        Assert.assertEquals("User with such email already exists", responseBody.get("message"));
+
+    }
 
 }

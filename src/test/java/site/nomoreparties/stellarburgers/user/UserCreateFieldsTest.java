@@ -1,18 +1,21 @@
 package site.nomoreparties.stellarburgers.user;
 
+import io.qameta.allure.Epic;
+import io.qameta.allure.Feature;
 import io.qameta.allure.junit4.DisplayName;
 import io.restassured.response.ValidatableResponse;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
 
-
+@Epic("Проверки ошибок создания пользователей с пустыми полями")
+@Feature("Проверки ошибок создания пользователей с пустыми полями")
 @RunWith(Parameterized.class)
 public class UserCreateFieldsTest {
 
-    User user;
     private final UserClient client = new UserClient();
     private final UserAssertions check = new UserAssertions();
+    private final User user;
 
     public UserCreateFieldsTest(User user) {
         this.user = user;

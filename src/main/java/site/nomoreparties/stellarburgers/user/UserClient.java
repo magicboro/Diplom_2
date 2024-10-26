@@ -29,10 +29,32 @@ public class UserClient {
                 .when()
                 .post(EnvPaths.USER_LOGIN_PATH)
                 .then().log().all();
-
     }
 
-    @Step("Delete user by method : " + EnvPaths.USER_REG_PATH)
+    @Step("Change user data by method with AUTH: " + EnvPaths.USER_PATH)
+    public ValidatableResponse changeUserCredentialsWithAuth(User user, String accessToken) {
+        return given()
+                .contentType(ContentType.JSON)
+                .baseUri(EnvPaths.BASE_URI)
+                .auth().oauth2(accessToken)
+                .body(user)
+                .when()
+                .patch(EnvPaths.USER_PATH)
+                .then().log().all();
+    }
+
+    @Step("Change user data by method without AUTH: " + EnvPaths.USER_PATH)
+    public ValidatableResponse changeUserCredentialsWithoutAuth(User user) {
+        return given()
+                .contentType(ContentType.JSON)
+                .baseUri(EnvPaths.BASE_URI)
+                .body(user)
+                .when()
+                .patch(EnvPaths.USER_PATH)
+                .then().log().all();
+    }
+
+    @Step("Delete user by method : " + EnvPaths.USER_PATH)
     public ValidatableResponse deleteUser(String accessToken) {
         return given()
                 .contentType(ContentType.JSON)

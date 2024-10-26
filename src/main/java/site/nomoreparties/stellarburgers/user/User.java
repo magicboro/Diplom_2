@@ -14,8 +14,9 @@ public class User {
         this.name = name;
     }
 
-    static User random() {
-        return new User("email" + RandomStringUtils.randomAlphanumeric(5, 15) + "@yandex.ru", "123QweЙцу!@#", "Имя");
+    public static User random() {
+        String userKey = RandomStringUtils.randomAlphabetic(5,15);
+        return new User(userKey + "__@yandex.ru", userKey + "__123QweЙцу!@#", userKey);
     }
 
     static User emptyEmail() {
